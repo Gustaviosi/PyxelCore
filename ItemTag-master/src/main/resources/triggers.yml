@@ -1,6 +1,0 @@
-consume_item:
-  gui_material: STEAK
-right_interact:
-  gui_material: STICK
-left_interact:
-  gui_material: STICK
