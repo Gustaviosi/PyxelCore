@@ -1,0 +1,312 @@
+# =========================================================
+#  PyxelCore — config principal
+# =========================================================
+#  §8 » §7minimalista, futurista, tudo customizável
+# =========================================================
+
+Config:
+  update_notification: true
+  data_save_time: 5
+  retain_player_data_until_restart: true
+  debug_actions: true
+  experimental:
+    variable_replacement: false
+  item_meta_variable_enabled: false
+  use_minimessage: false
+  register_commands:
+    - "hello"
+  to_condition_groups:
+    group1:
+      - "%player_has_permission_conditionalevents.somepermission% == yes"
+
+Messages:
+  prefix: '§8§l« §b§lPC §8§l» §r'
+  commandReload: '§7Config recarregada.'
+  commandNoPermissions: '§cVocê não tem permissão.'
+  commandResetError: '§cUse: §7/pc reset <jogador> <evento|all>'
+  onlyPlayerCommand: '§cApenas jogadores podem usar isso.'
+  playerHasNotPlayedRecentlyOrNoData: '§cEsse jogador não tem dados.'
+  playerNotOnline: '§cEsse jogador não está online.'
+  eventDoesNotExists: '§cEsse evento não existe.'
+  eventDataReset: '§7Dados de §e%player% §7resetados no evento §e%event%§7.'
+  eventDataResetAll: '§7Todos os dados de §e%player% §7resetados.'
+  eventDataResetForAllPlayers: '§7Dados resetados para §etodos §7no evento §e%event%§7.'
+  eventDataResetAllForAllPlayers: '§7Todos os dados de todos os jogadores resetados.'
+  eventEnableError: '§cUse: §7/pc enable <evento>'
+  eventDisableError: '§cUse: §7/pc disable <evento>'
+  eventEnabled: '§7Evento §a%event% §7ativado.'
+  eventDisabled: '§7Evento §c%event% §7desativado.'
+  eventIsNotEnabled: '§cEsse evento não está ativo.'
+  commandDebugError: '§cUse: §7/pc debug <evento> [jogador]'
+  debugEnabled: '§7Debug §aativo §7em §e%event%§7.'
+  debugDisabled: '§7Debug §cdesativado §7em §e%event%§7.'
+  debugEnabledPlayer: '§7Debug §aativo §7em §e%event% §7para §e%player%§7.'
+  debugDisabledPlayer: '§7Debug §cdesativado §7em §e%event% §7para §e%player%§7.'
+  commandItemError: '§cUse: §7/pc item <save|remove> <nome>'
+  savedItemAdded: '§7Item §a%name% §7salvo.'
+  savedItemRemoved: '§7Item §c%name% §7removido.'
+  savedItemAlreadyExists: '§cJá existe um item chamado §e%name%§c.'
+  savedItemDoesNotExists: '§cNão existe item chamado §e%name%§c.'
+  mustHaveItemInHand: '§cSegure um item.'
+  commandCallError: '§cUse: §7/pc call <evento> [player:<jog>] [silent:true]'
+  commandCallInvalidEvent: '§cEsse evento não é tipo §eCALL§c.'
+  commandCallCorrect: '§7Evento §a%event% §7chamado.'
+  commandCallCorrectPlayer: '§7Evento §a%event% §7chamado para §e%player%§7.'
+  commandCallFailed: '§cFalha ao chamar §e%event%§c.'
+  commandInterruptError: '§cUse: §7/pc interrupt <evento> [jogador] [silent:true]'
+  commandInterruptCorrect: '§7Evento §c%event% §7interrompido.'
+  commandInterruptCorrectPlayer: '§7Evento §c%event% §7interrompido para §e%player%§7.'
+  variableDoesNotExists: '§cVariável não existe.'
+  variableSetCorrect: '§7%var% §8» §a%value%'
+  variableGetCorrect: '§7%var% §8» §e%value%'
+  variableResetCorrect: '§7Variável §e%var% §7resetada.'
+  noItemInHand: '§cSegure um item.'
+  savedOk: '§7Item §a%name% §7salvo.'
+  needInput: '§7Digite no chat:'
+  inputCancelled: '§cCancelado.'
+  nameChanged: '§7Nome §aalterado§7.'
+  foodOk: '§7Comida§7! §en=%n% §7s=§e%s%'
+  foodRemoved: '§7Não é mais comestível.'
+  foodFailed: '§cFalhou (Paper 1.20.5+ necessário).'
+  effectAdded: '§7Efeito §a%name% §7adicionado.'
+  effectRemoved: '§7Efeito §c%name% §7removido.'
+  effectsCleared: '§7Removidos §e%n% §7efeitos.'
+  effectsCopied: '§7Copiados §e%n% §7efeitos.'
+  itemCopied: '§7Item §a%saved% §7aplicado na mão.'
+  pdcSet: '§7PDC §a%key% §7setado.'
+  numericError: '§cNúmeros inválidos.'
+  useCorrect: '§cUso inválido.'
+
+# =========================================================
+#  GUI — todas as strings e materiais dos menus
+# =========================================================
+Gui:
+  # ============ MENU PRINCIPAL ITEM ============
+  MainItem:
+    Title: '§8§l✦ Editor de Item'
+    # Material do preview (item na mão) é dinâmico
+    Nome:
+      Material: NAME_TAG
+      Name: '§e§lNome'
+      Lore:
+        - '§7Renomeia o item.'
+        - ''
+        - '§8Clique para editar'
+    Lore:
+      Material: WRITABLE_BOOK
+      Name: '§e§lLore'
+      Lore:
+        - '§7Edita as linhas de lore.'
+        - ''
+        - '§8Clique para abrir'
+    Comida:
+      Material: APPLE
+      Name: '§e§lComida'
+      Lore:
+        - '§7Torna o item comestível.'
+        - ''
+        - '§8Clique e digite nutrition/saturation'
+    Efeitos:
+      Material: BREWING_STAND
+      Name: '§e§lEfeitos'
+      Lore:
+        - '§7Efeitos enquanto equipado.'
+        - ''
+        - '§8Clique para abrir'
+    Pdc:
+      Material: PAPER
+      Name: '§e§lPDC'
+      Lore:
+        - '§7Dados persistentes no item.'
+        - ''
+        - '§8Clique para abrir'
+    Unbreakable:
+      Material: ANVIL
+      Name: '§e§lIndestrutível'
+      Lore:
+        - '§7Toggle unbreakable.'
+        - ''
+        - '§8Clique para alternar'
+    Info:
+      Material: CHEST
+      Name: '§e§lInfo/NBT'
+      Lore:
+        - '§7Ver dump completo.'
+        - ''
+        - '§8Clique para ver'
+    Salvar:
+      Material: EMERALD
+      Name: '§a§lSalvar'
+      Lore:
+        - '§7Salva o item atual.'
+        - ''
+        - '§8Clique e digite o nome'
+    Limpar:
+      Material: BARRIER
+      Name: '§c§lLimpar Item'
+      Lore:
+        - '§7Remove o item da mão.'
+        - ''
+        - '§cAção irreversível'
+    CopiarEfeitos:
+      Material: PAPER
+      Name: '§b§lCopiar Efeitos'
+      Lore:
+        - '§7Copia efeitos de outro item.'
+        - ''
+        - '§8Clique para abrir'
+    CopiarItem:
+      Material: WRITTEN_BOOK
+      Name: '§b§lCopiar Item Salvo'
+      Lore:
+        - '§7Aplica meta de item salvo.'
+        - ''
+        - '§8Clique para abrir'
+    Border:
+      Material: BLACK_STAINED_GLASS_PANE
+      Name: '§8'
+
+  # ============ SUBMENU LORE ============
+  LoreMenu:
+    Title: '§8§l✦ Lore'
+    Linha:
+      Material: PAPER
+      Name: '§7Linha %n%'
+      Lore:
+        - '%line%'
+        - ''
+        - '§8Clique pra remover'
+    Adicionar:
+      Material: LIME_DYE
+      Name: '§a§lAdicionar linha'
+      Lore:
+        - '§7Clique e digite no chat'
+        - '§8Use §f| §8pra várias linhas'
+    Voltar:
+      Material: ARROW
+      Name: '§7§lVoltar'
+    Limpar:
+      Material: BARRIER
+      Name: '§c§lLimpar tudo'
+
+  # ============ SUBMENU EFFECT ============
+  EffectMenu:
+    Title: '§8§l✦ Efeitos'
+    Efeito:
+      Material: POTION
+      Name: '§d%potion%'
+      Lore:
+        - '§7Duração: §f%dur% ticks'
+        - '§7Amplificador: §f%amp%'
+        - ''
+        - '§8Clique pra remover'
+    Adicionar:
+      Material: LIME_DYE
+      Name: '§a§lAdicionar efeito'
+      Lore:
+        - '§7Clique e digite:'
+        - '§e<potion> <duração> [amp]'
+    Voltar:
+      Material: ARROW
+      Name: '§7§lVoltar'
+    Limpar:
+      Material: BARRIER
+      Name: '§c§lLimpar todos'
+
+  # ============ SUBMENU PDC ============
+  PdcMenu:
+    Title: '§8§l✦ PDC'
+    Chave:
+      Material: PAPER
+      Name: '§e%key%'
+      Lore:
+        - '§7Valor: §f%value%'
+        - ''
+        - '§8Clique pra remover'
+    Setar:
+      Material: LIME_DYE
+      Name: '§a§lSetar PDC'
+      Lore:
+        - '§7Clique e digite:'
+        - '§e<chave> <valor>'
+    Voltar:
+      Material: ARROW
+      Name: '§7§lVoltar'
+    Limpar:
+      Material: BARRIER
+      Name: '§c§lLimpar todos'
+
+  # ============ COPIAR EFEITOS ============
+  CopyEffectsMenu:
+    Title: '§8§l✦ Copiar Efeitos'
+    Item:
+      Name: '§e%material%'
+      Lore:
+        - '§7Efeitos: §f%n%'
+        - ''
+        - '§8Clique para copiar pro item da mão'
+    Vazio:
+      Material: BARRIER
+      Name: '§cNenhum item com efeitos'
+      Lore:
+        - '§7no seu inventário.'
+    Voltar:
+      Material: ARROW
+      Name: '§7§lVoltar'
+
+  # ============ COPIAR ITEM SALVO ============
+  CopySavedMenu:
+    Title: '§8§l✦ Copiar Item Salvo'
+    Item:
+      Name: '§e%name%'
+      Lore:
+        - '§7Material: §f%material%'
+        - ''
+        - '§8Clique para aplicar no item da mão'
+    Vazio:
+      Material: BARRIER
+      Name: '§cNenhum item salvo'
+      Lore:
+        - '§7Use §e/pc item save §7primeiro.'
+    Voltar:
+      Material: ARROW
+      Name: '§7§lVoltar'
+
+  # ============ EVENTS GUI ============
+  EventsMenu:
+    Title: '§8§l✦ Eventos §7[%page%/%total%]'
+    EventAtivo:
+      Material: LIME_DYE
+      Name: '§e%event%'
+      Lore:
+        - '§7Tipo: §f%type%'
+        - '§7Status: §aativo'
+        - ''
+        - '§eClique §7= enable/disable'
+        - '§eShift+Clique §7= debug'
+        - '§eBotão direito §7= call'
+    EventInativo:
+      Material: GRAY_DYE
+      Name: '§e%event%'
+      Lore:
+        - '§7Tipo: §f%type%'
+        - '§7Status: §cinativo'
+        - ''
+        - '§eClique §7= enable/disable'
+        - '§eShift+Clique §7= debug'
+        - '§eBotão direito §7= call'
+    Anterior:
+      Material: ARROW
+      Name: '§7§l◀ Anterior'
+    Proximo:
+      Material: ARROW
+      Name: '§7§lPróximo ▶'
+    Fechar:
+      Material: BARRIER
+      Name: '§c§lFechar'
+    Info:
+      Material: BOOK
+      Name: '§e§l%n% §7eventos carregados'
+
+Variables:
+  storage: yaml

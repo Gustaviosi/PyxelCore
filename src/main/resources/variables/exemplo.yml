@@ -1,0 +1,18 @@
+# =========================================================
+#  Exemplo de variáveis — pode criar quantos arquivos quiser
+#  em plugins/PyxelCore/variables/*.yml
+# =========================================================
+
+variables:
+  exemplo_global:
+    variable_type: GLOBAL
+    value_type: TEXT
+    initial_value: "valor inicial"
+
+  exemplo_player:
+    variable_type: PLAYER
+    value_type: INTEGER
+    initial_value: 0
+    limitations:
+      min_value: 0
+      max_value: 1000

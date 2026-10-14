@@ -1,0 +1,12 @@
+main: ce.ajneb97.ConditionalEvents
+version: 1.0.0
+name: PyxelCore
+api-version: '1.21'
+folia-supported: true
+softdepend: [PlaceholderAPI,Citizens,WorldGuardEvents,WorldGuard,ProtocolLib,DiscordSRV,ItemsAdder,PacketEvents]
+author: PyxelGames (fork de Ajneb97)
+
+commands:
+  pyxelcore:
+    description: Main command of PyxelCore
+    aliases: [ce, pc]

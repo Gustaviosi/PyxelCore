@@ -1,0 +1,534 @@
+package emanondev.itemtag.equipmentchange;
+
+import emanondev.itemedit.utility.InventoryUtils;
+import emanondev.itemedit.utility.ItemUtils;
+import emanondev.itemedit.utility.VersionUtils;
+import emanondev.itemtag.ItemTag;
+import lombok.extern.slf4j.Slf4j;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Sheep;
+import org.bukkit.event.Event;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+
+@Slf4j
+public abstract class EquipmentChangeListenerBase implements Listener {
+
+    protected final HashMap<Player, EnumMap<EquipmentSlot, ItemStack>> equips = new HashMap<>();
+    protected final HashSet<Player> clickDrop = new HashSet<>();
+    private int maxCheckedPlayerPerTick = 5;
+    private TimerCheckTask timerTask = null;
+
+    public void reload() {
+        if (timerTask != null) {
+            timerTask.cancel();
+        }
+        long timerCheckFrequencyTicks = Math.max(5, ItemTag.get().getConfig().getInteger("equipment_change.frequency_ticks", 10));
+        maxCheckedPlayerPerTick = Math.max(1, ItemTag.get().getConfig().getInteger("equipment_change.max_checked_players_per_tick", 5));
+        for (Player p : new ArrayList<>(equips.keySet())) {
+            untrackPlayer(p);
+        }
+
+        equips.clear();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            trackPlayer(p);
+        }
+
+        timerTask = new TimerCheckTask();
+        timerTask.runTaskTimer(ItemTag.get(), timerCheckFrequencyTicks, timerCheckFrequencyTicks);
+
+    }
+
+    public abstract boolean isSimilarIgnoreDamage(ItemStack item, ItemStack item2);
+
+    public void onEquipChange(Player p,
+                              EquipmentChangeEvent.EquipMethod reason,
+                              @NotNull EquipmentSlot type,
+                              ItemStack oldItem,
+                              ItemStack newItem) {
+        equips.get(p).put(type, ItemUtils.isAirOrNull(newItem) ? null : new ItemStack(newItem));
+        Bukkit.getPluginManager().callEvent(new EquipmentChangeEvent(p, reason, type, oldItem, newItem));
+    }
+
+    public boolean trackPlayer(Player p) {
+        if (equips.containsKey(p))
+            return false;
+        EnumMap<EquipmentSlot, ItemStack> map = new EnumMap<>(EquipmentSlot.class);
+        equips.put(p, map);
+        for (EquipmentSlot slot : InventoryUtils.getPlayerEquipmentSlots()) {
+            map.put(slot, null);
+            onEquipChange(p, EquipmentChangeEvent.EquipMethod.JOIN, slot, null, getEquip(p, slot));
+        }
+        return true;
+    }
+
+    public boolean untrackPlayer(Player p) {
+        if (!equips.containsKey(p))
+            return false;
+        EnumMap<EquipmentSlot, ItemStack> map = equips.get(p);
+        for (EquipmentSlot slot : map.keySet()) {
+            onEquipChange(p, EquipmentChangeEvent.EquipMethod.QUIT, slot, map.get(slot), null);
+        }
+        equips.remove(p);
+        return true;
+    }
+
+    protected void handle(PlayerJoinEvent event) {
+        trackPlayer(event.getPlayer());
+    }
+
+    protected void handle(PlayerQuitEvent event) {
+        untrackPlayer(event.getPlayer());
+    }
+
+    protected void handle(PlayerDeathEvent event) {
+        if (event.getEntity().hasMetadata("NPC") || event.getEntity().hasMetadata("BOT"))
+            return;
+        for (EquipmentSlot type : InventoryUtils.getPlayerEquipmentSlots()) {
+            ItemStack item = getEquip(event.getEntity(), type);
+            if (!ItemUtils.isAirOrNull(item))
+                onEquipChange(event.getEntity(), EquipmentChangeEvent.EquipMethod.DEATH, type, item, null);
+        }
+    }
+
+    protected void handle(PlayerTeleportEvent event) {
+        if (event.getPlayer().hasMetadata("NPC") || event.getPlayer().hasMetadata("BOT"))
+            return;
+        if (!equips.containsKey(event.getPlayer()))
+            return; // some plugins teleport players just after login, before join this listener
+        new SlotCheck(event.getPlayer(), EquipmentChangeEvent.EquipMethod.PLUGIN_WORLD_CHANGE, InventoryUtils.getPlayerEquipmentSlots())
+                .runTaskLater(ItemTag.get(), 1L);
+    }
+
+    protected void handle(PlayerRespawnEvent event) {
+        if (event.getPlayer().hasMetadata("NPC") || event.getPlayer().hasMetadata("BOT"))
+            return;
+        for (EquipmentSlot type : InventoryUtils.getPlayerEquipmentSlots()) {
+            ItemStack item = getEquip(event.getPlayer(), type);
+            if (!ItemUtils.isAirOrNull(item))
+                onEquipChange(event.getPlayer(), EquipmentChangeEvent.EquipMethod.RESPAWN, type, null, item);
+        }
+    }
+
+    protected void handle(InventoryDragEvent event) {
+        if (!(event.getWhoClicked() instanceof Player))
+            return;
+        if (event.getWhoClicked().hasMetadata("NPC") || event.getWhoClicked().hasMetadata("BOT"))
+            return;
+        Player p = (Player) event.getWhoClicked();
+        for (EquipmentSlot type : InventoryUtils.getPlayerEquipmentSlots()) {
+            int pos = getSlotPosition(type, p, InventoryUtils.getTopInventory(event));
+            if (pos != -1 && event.getNewItems().containsKey(pos)) {
+                ItemStack itemOld = InventoryUtils.getTopInventory(event).getItem(pos);
+                ItemStack itemNew = event.getNewItems().get(pos);
+                if (!isSimilarIgnoreDamage(itemOld, itemNew))
+                    onEquipChange(p, EquipmentChangeEvent.EquipMethod.INVENTORY_DRAG, type, itemOld, itemNew);
+            }
+        }
+    }
+
+    protected void handle(PlayerItemBreakEvent e) {
+        if (e.getPlayer().hasMetadata("NPC") || e.getPlayer().hasMetadata("BOT"))
+            return;
+        ArrayList<EquipmentSlot> slots = new ArrayList<>();
+        for (EquipmentSlot slot : InventoryUtils.getPlayerEquipmentSlots()) {
+            if (e.getBrokenItem().equals(getEquip(e.getPlayer(), slot)))
+                slots.add(slot);
+        }
+        if (slots.isEmpty())
+            throw new IllegalStateException();
+        if (slots.size() == 1) {
+            onEquipChange(e.getPlayer(), EquipmentChangeEvent.EquipMethod.BROKE, slots.get(0), e.getBrokenItem(), null);
+            return;
+        }
+        new SlotCheck(e.getPlayer(), EquipmentChangeEvent.EquipMethod.BROKE, slots).runTaskLater(ItemTag.get(), 1L);
+    }
+
+    protected void handle(PlayerArmorStandManipulateEvent event) {
+        if (event.getPlayer().hasMetadata("NPC") || event.getPlayer().hasMetadata("BOT"))
+            return;
+        if (isSimilarIgnoreDamage(event.getArmorStandItem(), event.getPlayerItem()))
+            return;
+        onEquipChange(event.getPlayer(), EquipmentChangeEvent.EquipMethod.ARMOR_STAND_MANIPULATE, EquipmentSlot.HAND, event.getPlayerItem(),
+                event.getArmorStandItem());
+    }
+
+    protected void handle(PlayerDropItemEvent event) {
+        if (event.getPlayer().hasMetadata("NPC") || event.getPlayer().hasMetadata("BOT"))
+            return;
+        if (clickDrop.remove(event.getPlayer()))
+            return;
+        if (event.isCancelled())
+            return;
+        if (ItemUtils.isAirOrNull(getEquip(event.getPlayer(), EquipmentSlot.HAND)))
+            onEquipChange(event.getPlayer(), EquipmentChangeEvent.EquipMethod.DROP, EquipmentSlot.HAND, event.getItemDrop().getItemStack(),
+                    null);
+    }
+
+    protected void handle(PlayerInteractEntityEvent event) {
+        if (event.getPlayer().hasMetadata("NPC") || event.getPlayer().hasMetadata("BOT"))
+            return;
+        EquipmentSlot slot;
+        if (VersionUtils.isVersionAfter(1, 9))// safe
+            slot = event.getHand();
+        else
+            slot = EquipmentSlot.HAND;
+        ItemStack handItem;
+        handItem = getEquip(event.getPlayer(), slot);
+
+        if (ItemUtils.isAirOrNull(handItem) || handItem.getAmount() > 1
+                || (event.getRightClicked().getType() == EntityType.ARMOR_STAND
+                && handItem.getType() != Material.NAME_TAG))
+            return;
+        if (handItem.getType() == Material.NAME_TAG) {
+            if (!(event.getRightClicked() instanceof LivingEntity) || (event.getRightClicked() instanceof Player))
+                return;
+            if (!handItem.hasItemMeta() || !handItem.getItemMeta().hasDisplayName())
+                return;
+
+            onEquipChange(event.getPlayer(), EquipmentChangeEvent.EquipMethod.NAMETAG_APPLY, slot, handItem, null);
+            return;
+        }
+
+        if (event.getRightClicked() instanceof Sheep) {
+            Sheep sheep = (Sheep) event.getRightClicked();
+            if (sheep.isSheared())
+                return;
+            if (!handItem.getType().name().endsWith("_DYE"))
+                return;
+            if (handItem.getType().name().equals(sheep.getColor().name() + "_DYE"))
+                return;
+            onEquipChange(event.getPlayer(), EquipmentChangeEvent.EquipMethod.SHEEP_COLOR, slot, handItem, null);
+            return;
+        }
+        new SlotCheck(event.getPlayer(), EquipmentChangeEvent.EquipMethod.USE_ON_ENTITY, slot).runTaskLater(ItemTag.get(), 1L);
+    }
+
+    protected void handle(PlayerInteractEvent e) {
+        if (ItemUtils.isAirOrNull(e.getItem()))
+            return;
+        if (e.useItemInHand() == Event.Result.DENY)
+            return;
+        if (e.getPlayer().hasMetadata("NPC") || e.getPlayer().hasMetadata("BOT"))
+            return;
+        EquipmentSlot slot;
+        if (VersionUtils.isVersionAfter(1, 9))// safe
+            slot = e.getHand();
+        else
+            slot = EquipmentSlot.HAND;
+        EquipmentSlot type = guessRightClickSlotType(e.getItem());
+        switch (e.getAction()) {
+            case RIGHT_CLICK_AIR:
+                if (type != null && ItemUtils.isAirOrNull(getEquip(e.getPlayer(), type))) {
+                    onEquipChange(e.getPlayer(), EquipmentChangeEvent.EquipMethod.RIGHT_CLICK, type, null, e.getItem());
+                    if (e.getPlayer().getGameMode() != GameMode.CREATIVE)
+                        onEquipChange(e.getPlayer(), EquipmentChangeEvent.EquipMethod.RIGHT_CLICK, slot, e.getItem(), null);
+                } else if (e.getItem().getAmount() == 1)
+                    new SlotCheck(e.getPlayer(), EquipmentChangeEvent.EquipMethod.USE, slot).runTaskLater(ItemTag.get(), 1L);
+                return;
+            case RIGHT_CLICK_BLOCK:
+                if (e.useItemInHand() == Event.Result.DENY)
+                    return;
+                if (type != null && ItemUtils.isAirOrNull(getEquip(e.getPlayer(), type))) {
+                    new SlotCheck(e.getPlayer(), EquipmentChangeEvent.EquipMethod.RIGHT_CLICK, slot, type).runTaskLater(ItemTag.get(), 1L);
+                } else if (e.getItem().getAmount() == 1)
+                    new SlotCheck(e.getPlayer(), EquipmentChangeEvent.EquipMethod.USE, slot).runTaskLater(ItemTag.get(), 1L);
+                return;
+            default:
+                return;
+        }
+
+    }
+
+    protected void handle(PlayerItemConsumeEvent event) {
+        if (event.getPlayer().hasMetadata("NPC") || event.getPlayer().hasMetadata("BOT"))
+            return;
+        if (event.getItem().getAmount() != 1)
+            return;
+        List<EquipmentSlot> slots = new ArrayList<>(1);
+        if (event.getItem().equals(getEquip(event.getPlayer(), EquipmentSlot.HAND)))
+            slots.add(EquipmentSlot.HAND);
+        // safe
+        if (VersionUtils.isVersionAfter(1, 9) && event.getItem().equals(getEquip(event.getPlayer(), EquipmentSlot.OFF_HAND)))
+            slots.add(EquipmentSlot.OFF_HAND);
+        if (slots.size() == 1)
+            onEquipChange(event.getPlayer(), EquipmentChangeEvent.EquipMethod.CONSUME, slots.get(0), event.getItem(),
+                    event.getItem().getType() == Material.MILK_BUCKET ? new ItemStack(Material.BUCKET) : null);
+        else if (slots.size() > 1)
+            new SlotCheck(event.getPlayer(), EquipmentChangeEvent.EquipMethod.CONSUME, slots).runTaskLater(ItemTag.get(), 1L);
+        else // 3rd party plugin
+            if (VersionUtils.isVersionAfter(1, 9))// safe
+                new SlotCheck(event.getPlayer(), EquipmentChangeEvent.EquipMethod.CONSUME,
+                        Arrays.asList(EquipmentSlot.HAND, EquipmentSlot.OFF_HAND)).runTaskLater(ItemTag.get(), 1L);
+    }
+
+    protected void handle(PlayerItemHeldEvent event) {
+        if (event.getPlayer().hasMetadata("NPC") || event.getPlayer().hasMetadata("BOT"))
+            return;
+        ItemStack i1 = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
+        ItemStack i2 = event.getPlayer().getInventory().getItem(event.getNewSlot());
+        if (i1 == i2)
+            return;
+        if (i1 != null && i1.isSimilar(i2))
+            return;
+        onEquipChange(event.getPlayer(), EquipmentChangeEvent.EquipMethod.HOTBAR_HAND_CHANGE, EquipmentSlot.HAND, i1, i2);
+    }
+
+    @SuppressWarnings({"incomplete-switch", "deprecation"})
+    protected ItemStack getEquip(Player p, EquipmentSlot slot) {
+        //if (Util.isVersionAfter(1, 16))
+        //    return p.getEquipment().getItem(slot);
+
+        //old versions
+        switch (slot) {
+            case CHEST:
+                return p.getEquipment().getChestplate();
+            case FEET:
+                return p.getEquipment().getBoots();
+            case HAND:
+                if (VersionUtils.isVersionAfter(1, 9))// safe
+                    return p.getInventory().getItemInMainHand();
+                return p.getInventory().getItemInHand();
+            case HEAD:
+                return p.getEquipment().getHelmet();
+            case LEGS:
+                return p.getEquipment().getLeggings();
+        }// safe
+        if (VersionUtils.isVersionAfter(1, 9) && slot == EquipmentSlot.OFF_HAND) {
+            return p.getInventory().getItemInOffHand();
+        }
+        return null;
+    }
+
+    protected EquipmentSlot guessRightClickSlotType(ItemStack item) {
+        if (ItemUtils.isAirOrNull(item))
+            return null;
+
+        if (VersionUtils.isVersionAfter(1, 21, 5)) {
+            ItemMeta meta = ItemUtils.getMeta(item);
+            if (meta.hasEquippable()) {
+                return meta.getEquippable().getSlot();
+            }
+        }
+        String type = item.getType().name();
+        if (type.endsWith("_HELMET") || type.endsWith("_SKULL") || type.endsWith("_HEAD"))
+            return EquipmentSlot.HEAD;
+        else if (type.endsWith("_CHESTPLATE") || type.equals("ELYTRA"))
+            return EquipmentSlot.CHEST;
+        else if (type.endsWith("_LEGGINGS"))
+            return EquipmentSlot.LEGS;
+        else if (type.endsWith("_BOOTS"))
+            return EquipmentSlot.FEET;
+        else
+            return null;
+    }
+
+    protected EquipmentSlot guessDispenserSlotType(ItemStack item) {
+        EquipmentSlot slot = guessRightClickSlotType(item);
+
+        if (VersionUtils.isVersionAfter(1, 21, 5)) {
+            ItemMeta meta = ItemUtils.getMeta(item);
+            if (meta.hasEquippable()) {
+                return meta.getEquippable().getSlot();
+            }
+        }
+
+        if (slot == null && item != null) {
+            if (item.getType().name().endsWith("PUMPKIN"))
+                return EquipmentSlot.HEAD;
+            else if (VersionUtils.isVersionAfter(1, 9) && item.getType() == Material.SHIELD)// safe
+                return EquipmentSlot.OFF_HAND;
+        }
+        return slot;
+    }
+
+    @SuppressWarnings("incomplete-switch")
+    protected int getSlotPosition(EquipmentSlot slot, Player p, Inventory topInventory) {
+        if (topInventory.getType() == InventoryType.CRAFTING) {
+            switch (slot) {
+                case HAND:
+                    return p.getInventory().getHeldItemSlot() + 36;
+                case HEAD:
+                    return 5;
+                case CHEST:
+                    return 6;
+                case LEGS:
+                    return 7;
+                case FEET:
+                    return 8;
+            }
+            if (VersionUtils.isVersionAfter(1, 9) && slot == EquipmentSlot.OFF_HAND)// safe
+                return 45;
+            return -1;
+        }
+        if (slot == EquipmentSlot.HAND)
+            return p.getInventory().getHeldItemSlot() + topInventory.getSize() + 27;
+
+        return -1;
+    }
+
+    protected EquipmentSlot getEquipmentSlotAtPosition(int pos, Player p, Inventory topInventory) {
+        if (topInventory.getType() == InventoryType.CRAFTING)
+            switch (pos) {
+                case 5:
+                    return EquipmentSlot.HEAD;
+                case 6:
+                    return EquipmentSlot.CHEST;
+                case 7:
+                    return EquipmentSlot.LEGS;
+                case 8:
+                    return EquipmentSlot.FEET;
+                case 45:
+                    if (VersionUtils.isVersionAfter(1, 9))// safe
+                        return EquipmentSlot.OFF_HAND;
+                default:
+                    return p.getInventory().getHeldItemSlot() + 36 == pos ? EquipmentSlot.HAND : null;
+            }
+        return pos == p.getInventory().getHeldItemSlot() + topInventory.getSize() + 27 ? EquipmentSlot.HAND
+                : null;
+    }
+
+    private class TimerCheckTask extends BukkitRunnable {
+
+        private TimerCheckTask.PlayerCheck subTask = null;
+
+        @Override
+        public void run() {
+            if (subTask == null)// || subTask.isCancelled())
+                if (!equips.isEmpty()) {
+                    subTask = new TimerCheckTask.PlayerCheck();
+                    subTask.runTaskTimer(ItemTag.get(), 1L, 1L);
+                }
+        }
+
+        public void cancel() {
+            super.cancel();
+            if (subTask != null) {// && !subTask.isCancelled())
+                subTask.cancel();
+                subTask = null;
+            }
+        }
+
+        private class PlayerCheck extends BukkitRunnable {
+            private final List<Player> players = new ArrayList<>();
+            private int index = 0;
+
+            private PlayerCheck() {
+                players.addAll(equips.keySet());
+            }
+
+            @Override
+            public void run() {
+                int counter = 0;
+                while (counter < maxCheckedPlayerPerTick) {
+                    if (index >= players.size()) {
+                        this.cancel();
+                        if (subTask != null)
+                            subTask = null;
+                        return;
+                    }
+                    Player p = players.get(index);
+                    index++;
+                    if (!p.isOnline()) {
+                        untrackPlayer(p);
+                        continue;
+                    }
+                    if (p.hasMetadata("BOT"))
+                        continue;
+                    trackPlayer(p);
+                    counter++;
+                    for (EquipmentSlot slot : InventoryUtils.getPlayerEquipmentSlots()) {
+                        ItemStack newItem = getEquip(p, slot);
+                        ItemStack oldItem = equips.get(p).get(slot);
+                        if (!isSimilarIgnoreDamage(oldItem, newItem))
+                            onEquipChange(p, EquipmentChangeEvent.EquipMethod.UNKNOWN, slot, oldItem, newItem);
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    protected class SlotCheck extends BukkitRunnable {
+
+        private final EnumSet<EquipmentSlot> slots = EnumSet.noneOf(EquipmentSlot.class);
+        private final Player p;
+        private final EquipmentChangeEvent.EquipMethod method;
+
+        public SlotCheck(Player p, EquipmentChangeEvent.EquipMethod method, EquipmentSlot... slots) {
+            if (slots == null || slots.length == 0 || p == null || method == null)
+                throw new IllegalArgumentException();
+            this.p = p;
+            this.method = method;
+            if (trackPlayer(p)) {
+                IllegalStateException e = new IllegalStateException();
+                log.warn(e.getMessage(), e);
+            }
+            for (EquipmentSlot slot : slots) {
+                if (!isSimilarIgnoreDamage(equips.get(p).get(slot), getEquip(p, slot)))
+                    onEquipChange(p, EquipmentChangeEvent.EquipMethod.UNKNOWN, slot, equips.get(p).get(slot), getEquip(p, slot));
+                this.slots.add(slot);
+            }
+        }
+
+        public SlotCheck(Player p, EquipmentChangeEvent.EquipMethod method, Collection<EquipmentSlot> slots) {
+            if (slots == null || slots.isEmpty() || p == null || method == null)
+                throw new IllegalArgumentException();
+            this.p = p;
+            this.method = method;
+            if (trackPlayer(p)) {
+                IllegalStateException e = new IllegalStateException();
+                log.warn(e.getMessage(), e);
+            }
+            for (EquipmentSlot slot : slots) {
+                ItemStack equip = getEquip(p, slot);
+                if (ItemUtils.isAirOrNull(equip))
+                    equip = null;
+                else
+                    equip = new ItemStack(equip);
+                if (!isSimilarIgnoreDamage(equips.get(p).get(slot), equip))
+                    onEquipChange(p, EquipmentChangeEvent.EquipMethod.UNKNOWN, slot, equips.get(p).get(slot), equip);
+                this.slots.add(slot);
+            }
+        }
+
+        @Override
+        public void run() {
+            if (!p.isOnline())
+                return;
+            if (trackPlayer(p)) {
+                IllegalStateException e = new IllegalStateException();
+                log.warn(e.getMessage(), e);
+            }
+            for (EquipmentSlot slot : slots) {
+                ItemStack item = getEquip(p, slot);
+                if (ItemUtils.isAirOrNull(item))
+                    item = null;
+                if (isSimilarIgnoreDamage(item, equips.get(p).get(slot))) {
+                    continue;
+                }
+                onEquipChange(p, method, slot, equips.get(p).get(slot), item);
+            }
+        }
+
+    }
+}
