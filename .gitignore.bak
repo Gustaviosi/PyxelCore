@@ -1,0 +1,11 @@
+target/
+.idea/
+*.iml
+*.log
+build-log.txt
+dependency-reduced-pom.xml
+WorldGuard-Events-master/
+ItemTag-master/
+ItemEdit-master/
+ServerVariables-main/
+wiki/

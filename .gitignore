@@ -8,4 +8,7 @@ WorldGuard-Events-master/
 ItemTag-master/
 ItemEdit-master/
 ServerVariables-main/
-wiki/
+
+# wiki deve ser versionada
+!wiki/
+!wiki/**
