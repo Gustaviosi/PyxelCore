@@ -79,7 +79,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
                             if(sender instanceof Player){
                                     ce.ajneb97.gui.EventsGui.openMain((Player)sender);
                             }
-                    }else if(args[0].equalsIgnoreCase("docs")) { try { java.io.File f = ce.ajneb97.utils.DocsGenerator.generate(plugin); sender.sendMessage("§8[§bPC§8] §aDocs geradas: §f"+f.getPath()); } catch(Exception ex){ sender.sendMessage("§cErro: "+ex.getMessage()); } } else if(args[0].equalsIgnoreCase("stats")) { statsCmd(sender,args); } else if(args[0].equalsIgnoreCase("export")) { exportEvent(sender,args); } else if(args[0].equalsIgnoreCase("import")) { importEvent(sender,args); } else if(args[0].equalsIgnoreCase("var")) {
+                    }else if(args[0].equalsIgnoreCase("docs")) { try { java.io.File f = ce.ajneb97.utils.DocsGenerator.generate(plugin); sender.sendMessage("Â§8[Â§bPCÂ§8] Â§aDocs geradas: Â§f"+f.getPath()); } catch(Exception ex){ sender.sendMessage("Â§cErro: "+ex.getMessage()); } } else if(args[0].equalsIgnoreCase("stats")) { statsCmd(sender,args); } else if(args[0].equalsIgnoreCase("export")) { exportEvent(sender,args); } else if(args[0].equalsIgnoreCase("import")) { importEvent(sender,args); } else if(args[0].equalsIgnoreCase("var")) {
                             variable(args,sender,config,msgManager);
                     }else {
                             if(sender instanceof Player){
@@ -103,7 +103,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
     }
 
 	public void reset(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager){
-		// /ce reset <player> <event>
+		// /pc reset <player> <event>
 		if(args.length <= 2){
 			msgManager.sendMessage(sender,config.getString("Messages.commandResetError"),true);
 			return;
@@ -131,7 +131,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	public void enable(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
-		// /ce enable <event>
+		// /pc enable <event>
 		if(args.length <= 1) {
 			msgManager.sendMessage(sender,config.getString("Messages.eventEnableError"),true);
 			return;
@@ -157,7 +157,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	public void disable(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
-		// /ce disable <event>
+		// /pc disable <event>
 		if(args.length <= 1) {
 			msgManager.sendMessage(sender,config.getString("Messages.eventDisableError"),true);
 			return;
@@ -184,7 +184,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	}
 
 	public void debug(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
-		// /ce debug <event> (optional)<player>
+		// /pc debug <event> (optional)<player>
 		if(args.length <= 1) {
 			msgManager.sendMessage(sender,config.getString("Messages.commandDebugError"),true);
 			return;
@@ -221,7 +221,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	}
 
 	public void call(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
-		// /ce call <event> (optional)%variable1%=<value1>;%variable2%=<value2> (optional)player:<player> (optional)silent:true
+		// /pc call <event> (optional)%variable1%=<value1>;%variable2%=<value2> (optional)player:<player> (optional)silent:true
 		if(args.length <= 1) {
 			msgManager.sendMessage(sender,config.getString("Messages.commandCallError"),true);
 			return;
@@ -314,134 +314,134 @@ public class MainCommand implements CommandExecutor, TabCompleter {
         }
 
         if(sub.equals("name")){
-            if(args.length < 3){ player.sendMessage("§7Use: §e/pc item name <nome>"); return; }
+            if(args.length < 3){ player.sendMessage("Â§7Use: Â§e/pc item name <nome>"); return; }
             String nome = String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length));
-            if(ce.ajneb97.utils.ItemEditor.setName(player, nome)) player.sendMessage("§7Nome §aalterado§7.");
-            else player.sendMessage("§cSegure um item.");
+            if(ce.ajneb97.utils.ItemEditor.setName(player, nome)) player.sendMessage("Â§7Nome Â§aalteradoÂ§7.");
+            else player.sendMessage("Â§cSegure um item.");
             return;
         }
 
         if(sub.equals("lore")){
-            if(args.length < 3){ player.sendMessage("§cUso: /ce item lore <set|add|remove|clear> [texto]"); return; }
+            if(args.length < 3){ player.sendMessage("Â§cUso: /pc item lore <set|add|remove|clear> [texto]"); return; }
             String op = args[2].toLowerCase();
-            if(op.equals("clear")){ ce.ajneb97.utils.ItemEditor.clearLore(player); player.sendMessage("§7Lore §alimpa§7."); }
+            if(op.equals("clear")){ ce.ajneb97.utils.ItemEditor.clearLore(player); player.sendMessage("Â§7Lore Â§alimpaÂ§7."); }
             else if(op.equals("add")){
-                if(args.length < 4){ player.sendMessage("§cFalta texto."); return; }
+                if(args.length < 4){ player.sendMessage("Â§cFalta texto."); return; }
                 String txt = String.join(" ", java.util.Arrays.copyOfRange(args, 3, args.length));
                 ce.ajneb97.utils.ItemEditor.addLore(player, txt);
-                player.sendMessage("§aAdicionado.");
+                player.sendMessage("Â§aAdicionado.");
             } else if(op.equals("remove")){
-                if(args.length < 4){ player.sendMessage("§cFalta index."); return; }
-                try { int idx = Integer.parseInt(args[3]); if(ce.ajneb97.utils.ItemEditor.removeLore(player, idx)) player.sendMessage("§aRemovido."); else player.sendMessage("§cIndex inválido."); } catch(Exception e){ player.sendMessage("§cIndex inválido."); }
+                if(args.length < 4){ player.sendMessage("Â§cFalta index."); return; }
+                try { int idx = Integer.parseInt(args[3]); if(ce.ajneb97.utils.ItemEditor.removeLore(player, idx)) player.sendMessage("Â§aRemovido."); else player.sendMessage("Â§cIndex invÃ¡lido."); } catch(Exception e){ player.sendMessage("Â§cIndex invÃ¡lido."); }
             } else if(op.equals("set")){
-                if(args.length < 4){ player.sendMessage("§cFalta texto."); return; }
+                if(args.length < 4){ player.sendMessage("Â§cFalta texto."); return; }
                 String txt = String.join(" ", java.util.Arrays.copyOfRange(args, 3, args.length));
                 ce.ajneb97.utils.ItemEditor.setLore(player, java.util.Arrays.asList(txt.split("\\|")));
-                player.sendMessage("§aLore definida.");
-            } else player.sendMessage("§cInvalido.");
+                player.sendMessage("Â§aLore definida.");
+            } else player.sendMessage("Â§cInvalido.");
             return;
         }
 
         if(sub.equals("pdc")){
-            if(args.length < 3){ player.sendMessage("§7Use: §e/pc item pdc <set|get|remove|list>"); return; }
+            if(args.length < 3){ player.sendMessage("Â§7Use: Â§e/pc item pdc <set|get|remove|list>"); return; }
             String op = args[2].toLowerCase();
             if(op.equals("list")){
                 java.util.Set<org.bukkit.NamespacedKey> keys = ce.ajneb97.utils.ItemEditor.listPdc(player);
-                if(keys == null || keys.isEmpty()){ player.sendMessage("§eSem PDC."); return; }
-                for(org.bukkit.NamespacedKey k : keys) player.sendMessage("§8- §e" + k.getKey() + "§7: §f" + ce.ajneb97.utils.ItemEditor.getPdc(player, k.getKey()));
+                if(keys == null || keys.isEmpty()){ player.sendMessage("Â§eSem PDC."); return; }
+                for(org.bukkit.NamespacedKey k : keys) player.sendMessage("Â§8- Â§e" + k.getKey() + "Â§7: Â§f" + ce.ajneb97.utils.ItemEditor.getPdc(player, k.getKey()));
             } else if(op.equals("set")){
-                if(args.length < 4){ player.sendMessage("§cFalta chave."); return; }
+                if(args.length < 4){ player.sendMessage("Â§cFalta chave."); return; }
                 String chave = args[3];
                 String valor = args.length >= 5 ? String.join(" ", java.util.Arrays.copyOfRange(args, 4, args.length)) : "";
                 try { int intVal = Integer.parseInt(valor); ce.ajneb97.utils.ItemEditor.setPdcInt(player, chave, intVal); }
                 catch(Exception e){ ce.ajneb97.utils.ItemEditor.setPdcString(player, chave, valor); }
-                player.sendMessage("§7PDC §asetado§7: §e" + chave);
+                player.sendMessage("Â§7PDC Â§asetadoÂ§7: Â§e" + chave);
             } else if(op.equals("get")){
-                if(args.length < 4){ player.sendMessage("§cFalta chave."); return; }
+                if(args.length < 4){ player.sendMessage("Â§cFalta chave."); return; }
                 String v = ce.ajneb97.utils.ItemEditor.getPdc(player, args[3]);
-                player.sendMessage("§e" + args[3] + "§7: §f" + (v == null ? "(vazio)" : v));
+                player.sendMessage("Â§e" + args[3] + "Â§7: Â§f" + (v == null ? "(vazio)" : v));
             } else if(op.equals("remove")){
-                if(args.length < 4){ player.sendMessage("§cFalta chave."); return; }
+                if(args.length < 4){ player.sendMessage("Â§cFalta chave."); return; }
                 ce.ajneb97.utils.ItemEditor.removePdc(player, args[3]);
-                player.sendMessage("§aRemovido.");
+                player.sendMessage("Â§aRemovido.");
             }
             return;
         }
 
         if(sub.equals("nbt") || sub.equals("info") || sub.equals("dump")){ player.sendMessage(ce.ajneb97.utils.ItemEditor.dump(player)); return; }
 
-        if(sub.equals("clear")){ ce.ajneb97.utils.ItemEditor.clearItem(player); player.sendMessage("§7Item §cremovido§7."); return; }
+        if(sub.equals("clear")){ ce.ajneb97.utils.ItemEditor.clearItem(player); player.sendMessage("Â§7Item Â§cremovidoÂ§7."); return; }
 
         if(sub.equals("unbreakable")){
             boolean b = args.length >= 3 && args[2].equalsIgnoreCase("true");
             ce.ajneb97.utils.ItemEditor.setUnbreakable(player, b);
-            player.sendMessage("§7Indestrutível§7: §e" + b);
+            player.sendMessage("Â§7IndestrutÃ­velÂ§7: Â§e" + b);
             return;
         }
 
         if(sub.equals("food")){
-            if(args.length < 4){ player.sendMessage("§7Use: §e/pc item food <nutrition> <saturation>"); return; }
+            if(args.length < 4){ player.sendMessage("Â§7Use: Â§e/pc item food <nutrition> <saturation>"); return; }
             try {
                 int nutrition = Integer.parseInt(args[2]);
                 float sat = Float.parseFloat(args[3]);
-                if(nutrition == 0 && sat == 0){ ce.ajneb97.utils.ItemEditor.clearFood(player); player.sendMessage("§aNao e mais comestivel."); }
-                else { if(ce.ajneb97.utils.ItemEditor.setFood(player, nutrition, sat)) player.sendMessage("§aComestivel! n=" + nutrition + " s=" + sat); else player.sendMessage("§cFalhou (Paper 1.20.5+)."); }
-            } catch(Exception e){ player.sendMessage("§cNúmeros inválidos."); }
+                if(nutrition == 0 && sat == 0){ ce.ajneb97.utils.ItemEditor.clearFood(player); player.sendMessage("Â§aNao e mais comestivel."); }
+                else { if(ce.ajneb97.utils.ItemEditor.setFood(player, nutrition, sat)) player.sendMessage("Â§aComestivel! n=" + nutrition + " s=" + sat); else player.sendMessage("Â§cFalhou (Paper 1.20.5+)."); }
+            } catch(Exception e){ player.sendMessage("Â§cNÃºmeros invÃ¡lidos."); }
             return;
         }
 
         if(sub.equals("effect")){
-            if(args.length < 3){ player.sendMessage("§7Use: §e/pc item effect <add|remove|list|clear|copy>"); return; }
+            if(args.length < 3){ player.sendMessage("Â§7Use: Â§e/pc item effect <add|remove|list|clear|copy>"); return; }
             String op = args[2].toLowerCase();
             ItemStack item = player.getInventory().getItemInMainHand();
-            if(item == null || item.getType().isAir()){ player.sendMessage("§cSegure um item."); return; }
+            if(item == null || item.getType().isAir()){ player.sendMessage("Â§cSegure um item."); return; }
             if(op.equals("list")){
                 java.util.List<String> list = ce.ajneb97.managers.ItemEffectManager.listEffects(item, plugin);
-                if(list.isEmpty()){ player.sendMessage("§eSem efeitos."); return; }
-                for(String e : list) player.sendMessage("§8- §e" + e);
+                if(list.isEmpty()){ player.sendMessage("Â§eSem efeitos."); return; }
+                for(String e : list) player.sendMessage("Â§8- Â§e" + e);
             } else if(op.equals("add")){
-                if(args.length < 5){ player.sendMessage("§7Use: §e/pc item effect add <potion> <duration> [amp]"); return; }
+                if(args.length < 5){ player.sendMessage("Â§7Use: Â§e/pc item effect add <potion> <duration> [amp]"); return; }
                 String potion = args[3];
                 int duration = Integer.parseInt(args[4]);
                 int amplifier = args.length >= 6 ? Integer.parseInt(args[5]) : 0;
-                if(ce.ajneb97.managers.ItemEffectManager.addEffect(plugin, item, potion, duration, amplifier)){ player.getInventory().setItemInMainHand(item); player.sendMessage("§aAdicionado: §e" + potion); }
-                else player.sendMessage("§cLimite de 10.");
+                if(ce.ajneb97.managers.ItemEffectManager.addEffect(plugin, item, potion, duration, amplifier)){ player.getInventory().setItemInMainHand(item); player.sendMessage("Â§aAdicionado: Â§e" + potion); }
+                else player.sendMessage("Â§cLimite de 10.");
             } else if(op.equals("remove")){
-                if(args.length < 4){ player.sendMessage("§7Use: §e/pc item effect remove <potion>"); return; }
-                if(ce.ajneb97.managers.ItemEffectManager.removeEffect(item, plugin, args[3])){ player.getInventory().setItemInMainHand(item); player.sendMessage("§aRemovido."); }
-                else player.sendMessage("§cNao encontrado.");
+                if(args.length < 4){ player.sendMessage("Â§7Use: Â§e/pc item effect remove <potion>"); return; }
+                if(ce.ajneb97.managers.ItemEffectManager.removeEffect(item, plugin, args[3])){ player.getInventory().setItemInMainHand(item); player.sendMessage("Â§aRemovido."); }
+                else player.sendMessage("Â§cNao encontrado.");
             } else if(op.equals("clear")){
                 int n = ce.ajneb97.managers.ItemEffectManager.clearEffects(item, plugin);
                 player.getInventory().setItemInMainHand(item);
-                player.sendMessage("§7Removidos §e" + n);
+                player.sendMessage("Â§7Removidos Â§e" + n);
             } else if(op.equals("copy")){
-                if(args.length < 4){ player.sendMessage("§7Use: §e/pc item effect copy <material>"); return; }
+                if(args.length < 4){ player.sendMessage("Â§7Use: Â§e/pc item effect copy <material>"); return; }
                 org.bukkit.Material srcMat = org.bukkit.Material.matchMaterial(args[3]);
-                if(srcMat == null){ player.sendMessage("§cMaterial invalido."); return; }
+                if(srcMat == null){ player.sendMessage("Â§cMaterial invalido."); return; }
                 org.bukkit.inventory.ItemStack source = null;
                 for(org.bukkit.inventory.ItemStack it : player.getInventory().getContents()){ if(it != null && it.getType() == srcMat){ source = it; break; } }
-                if(source == null){ player.sendMessage("§cSem " + srcMat.name()); return; }
+                if(source == null){ player.sendMessage("Â§cSem " + srcMat.name()); return; }
                 int copied = 0;
                 for(String eff : ce.ajneb97.managers.ItemEffectManager.listEffects(source, plugin)){
                     String[] parts = eff.split("\\|");
                     if(parts.length >= 3){ try { int dur = Integer.parseInt(parts[1]); int amp = Integer.parseInt(parts[2]); if(ce.ajneb97.managers.ItemEffectManager.addEffect(plugin, item, parts[0], dur, amp)) copied++; } catch(Exception ignored) {} }
                 }
                 player.getInventory().setItemInMainHand(item);
-                player.sendMessage("§7Copiados §e" + copied);
+                player.sendMessage("Â§7Copiados Â§e" + copied);
             }
             return;
         }
 
         if(sub.equals("copy")){
-            if(args.length < 3){ player.sendMessage("§7Use: §e/pc item copy <nome_salvo>"); return; }
+            if(args.length < 3){ player.sendMessage("Â§7Use: Â§e/pc item copy <nome_salvo>"); return; }
             SavedItemsManager sim = plugin.getSavedItemsManager();
             org.bukkit.inventory.ItemStack source = sim.getItem(args[2], player);
-            if(source == null){ player.sendMessage("§cNão existe."); return; }
+            if(source == null){ player.sendMessage("Â§cNÃ£o existe."); return; }
             org.bukkit.inventory.ItemStack hand = player.getInventory().getItemInMainHand();
-            if(hand == null || hand.getType().isAir()){ player.sendMessage("§cSegure um item."); return; }
+            if(hand == null || hand.getType().isAir()){ player.sendMessage("Â§cSegure um item."); return; }
             if(source.hasItemMeta()) hand.setItemMeta(source.getItemMeta());
             player.getInventory().setItemInMainHand(hand);
-            player.sendMessage("§7Item §acopiado§7.");
+            player.sendMessage("Â§7Item Â§acopiadoÂ§7.");
             return;
         }
 
@@ -449,7 +449,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
     }
 
     public void interrupt(String[] args,CommandSender sender,FileConfiguration config,MessagesManager msgManager) {
-		// /ce interrupt <event> (optional)<player>
+		// /pc interrupt <event> (optional)<player>
 		if (args.length <= 1) {
 			msgManager.sendMessage(sender, config.getString("Messages.commandInterruptError"), true);
 			return;
@@ -484,39 +484,39 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 	
 	public void variable(String[] args, CommandSender sender, FileConfiguration config, MessagesManager msgManager) {
                 if(args.length < 3){
-                        sender.sendMessage("§cUse: §e/pc var <jogador> <variavel> [valor]");
+                        sender.sendMessage("Â§cUse: Â§e/pc var <jogador> <variavel> [valor]");
                         return;
                 }
                 String player = args[1];
                 String nome = args[2];
                 ce.ajneb97.variables.VariablesManager mgr = plugin.getVariablesManager();
-                if(mgr == null){ sender.sendMessage("§cVariablesManager offline."); return; }
+                if(mgr == null){ sender.sendMessage("Â§cVariablesManager offline."); return; }
                 if(args.length == 3){
                         ce.ajneb97.variables.VariableResult r = mgr.get(player, nome);
-                        if(r.isError()){ sender.sendMessage("§c" + r.getErrorMessage()); return; }
-                        sender.sendMessage("§a" + player + "." + nome + " §7= §e" + r.getResultValue());
+                        if(r.isError()){ sender.sendMessage("Â§c" + r.getErrorMessage()); return; }
+                        sender.sendMessage("Â§a" + player + "." + nome + " Â§7= Â§e" + r.getResultValue());
                 }else{
                         StringBuilder sb = new StringBuilder();
                         for(int i = 3; i < args.length; i++){ if(i > 3) sb.append(" "); sb.append(args[i]); }
                         ce.ajneb97.variables.VariableResult r = mgr.set(player, nome, sb.toString());
-                        if(r.isError()){ sender.sendMessage("§c" + r.getErrorMessage()); return; }
-                        sender.sendMessage("§a" + player + "." + nome + " §7= §e" + r.getResultValue());
+                        if(r.isError()){ sender.sendMessage("Â§c" + r.getErrorMessage()); return; }
+                        sender.sendMessage("Â§a" + player + "." + nome + " Â§7= Â§e" + r.getResultValue());
                 }
         }
 
         public void exportEvent(CommandSender sender, String[] args) {
-                if(args.length < 2){ sender.sendMessage("§cUse: /pc export <evento>"); return; }
+                if(args.length < 2){ sender.sendMessage("Â§cUse: /pc export <evento>"); return; }
                 String eventName = args[1];
                 ce.ajneb97.model.CEEvent e = plugin.getEventsManager().getEvent(eventName);
-                if(e == null){ sender.sendMessage("§cEvento nao existe."); return; }
+                if(e == null){ sender.sendMessage("Â§cEvento nao existe."); return; }
                 java.io.File f = null;
                 try { java.io.File abs = new java.io.File(e.getFilePath()); if(abs.exists()) f = abs; } catch(Exception ignored){}
                 if(f == null){ java.io.File alt = new java.io.File(plugin.getDataFolder(), "events" + java.io.File.separator + e.getFilePath()); if(alt.exists()) f = alt; }
                 if(f == null){ java.io.File alt2 = new java.io.File(plugin.getDataFolder(), e.getFilePath()); if(alt2.exists()) f = alt2; }
-                if(f == null){ sender.sendMessage("§cArquivo do evento nao encontrado: " + e.getFilePath()); return; }
+                if(f == null){ sender.sendMessage("Â§cArquivo do evento nao encontrado: " + e.getFilePath()); return; }
                 org.bukkit.configuration.file.YamlConfiguration src = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(f);
                 org.bukkit.configuration.ConfigurationSection sec = src.getConfigurationSection("Events." + eventName);
-                if(sec == null){ sender.sendMessage("§cSecao Events." + eventName + " ausente no YAML."); return; }
+                if(sec == null){ sender.sendMessage("Â§cSecao Events." + eventName + " ausente no YAML."); return; }
                 org.bukkit.configuration.file.YamlConfiguration out = new org.bukkit.configuration.file.YamlConfiguration();
                 out.createSection("Events");
                 out.set("Events." + eventName, sec);
@@ -524,66 +524,66 @@ public class MainCommand implements CommandExecutor, TabCompleter {
                 java.io.File exp = new java.io.File(plugin.getDataFolder(), "exports");
                 if(!exp.exists()) exp.mkdirs();
                 java.io.File outF = new java.io.File(exp, eventName + ".yml");
-                try { java.nio.file.Files.write(outF.toPath(), yaml.getBytes(java.nio.charset.StandardCharsets.UTF_8)); } catch(Exception ex){ sender.sendMessage("§cErro: " + ex.getMessage()); return; }
-                sender.sendMessage("§8[§bPC§8] §aExportado: §e" + eventName);
-                sender.sendMessage("§8[§bPC§8] §7Arquivo: §f" + outF.getPath());
-                sender.sendMessage("§8[§bPC§8] §7Pra importar: coloque conteudo em §fplugins/ConditionalEvents/imports/" + eventName + ".yml");
-                for(String line : yaml.split("\n")) sender.sendMessage("§f" + line);
+                try { java.nio.file.Files.write(outF.toPath(), yaml.getBytes(java.nio.charset.StandardCharsets.UTF_8)); } catch(Exception ex){ sender.sendMessage("Â§cErro: " + ex.getMessage()); return; }
+                sender.sendMessage("Â§8[Â§bPCÂ§8] Â§aExportado: Â§e" + eventName);
+                sender.sendMessage("Â§8[Â§bPCÂ§8] Â§7Arquivo: Â§f" + outF.getPath());
+                sender.sendMessage("Â§8[Â§bPCÂ§8] Â§7Pra importar: coloque conteudo em Â§fplugins/ConditionalEvents/imports/" + eventName + ".yml");
+                for(String line : yaml.split("\n")) sender.sendMessage("Â§f" + line);
         }
 
         public void importEvent(CommandSender sender, String[] args) {
-                if(args.length < 2){ sender.sendMessage("§cUse: /pc import <nome>"); return; }
+                if(args.length < 2){ sender.sendMessage("Â§cUse: /pc import <nome>"); return; }
                 String eventName = args[1];
-                if(plugin.getEventsManager().getEvent(eventName) != null){ sender.sendMessage("§cJa existe evento com esse nome."); return; }
+                if(plugin.getEventsManager().getEvent(eventName) != null){ sender.sendMessage("Â§cJa existe evento com esse nome."); return; }
                 java.io.File imports = new java.io.File(plugin.getDataFolder(), "imports");
                 if(!imports.exists()) imports.mkdirs();
                 java.io.File in = new java.io.File(imports, eventName + ".yml");
-                if(!in.exists()){ sender.sendMessage("§cCrie o arquivo: §f" + in.getPath()); return; }
+                if(!in.exists()){ sender.sendMessage("Â§cCrie o arquivo: Â§f" + in.getPath()); return; }
                 org.bukkit.configuration.file.YamlConfiguration cfg = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(in);
                 org.bukkit.configuration.ConfigurationSection sec = cfg.getConfigurationSection("Events." + eventName);
-                if(sec == null){ sender.sendMessage("§cYAML invalido (faltou Events." + eventName + ")"); return; }
+                if(sec == null){ sender.sendMessage("Â§cYAML invalido (faltou Events." + eventName + ")"); return; }
                 java.io.File evDir = new java.io.File(plugin.getDataFolder(), "events");
                 if(!evDir.exists()) evDir.mkdirs();
                 java.io.File target = new java.io.File(evDir, "imported.yml");
                 org.bukkit.configuration.file.YamlConfiguration tc = target.exists() ? org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(target) : new org.bukkit.configuration.file.YamlConfiguration();
                 if(!tc.isConfigurationSection("Events")) tc.createSection("Events");
                 tc.set("Events." + eventName, sec);
-                try { tc.save(target); } catch(Exception ex){ sender.sendMessage("§cErro: " + ex.getMessage()); return; }
-                sender.sendMessage("§8[§bPC§8] §aImportado: §e" + eventName + " §7(rode §f/pc reload§7)");
+                try { tc.save(target); } catch(Exception ex){ sender.sendMessage("Â§cErro: " + ex.getMessage()); return; }
+                sender.sendMessage("Â§8[Â§bPCÂ§8] Â§aImportado: Â§e" + eventName + " Â§7(rode Â§f/pc reloadÂ§7)");
         }
         public void statsCmd(CommandSender sender, String[] args) {
                 ce.ajneb97.managers.StatsManager sm = plugin.getStatsManager();
                 if(args.length == 1){
-                        sender.sendMessage("§8[§bPC§8] §7Eventos com stats:");
-                        if(sm.keys().isEmpty()){ sender.sendMessage("§7(nenhum ainda)"); return; }
-                        for(String k : sm.keys()) sender.sendMessage("§8- §e"+k+" §7count=§f"+sm.count(k)+" §7avg=§f"+sm.avg(k)+"ms");
+                        sender.sendMessage("Â§8[Â§bPCÂ§8] Â§7Eventos com stats:");
+                        if(sm.keys().isEmpty()){ sender.sendMessage("Â§7(nenhum ainda)"); return; }
+                        for(String k : sm.keys()) sender.sendMessage("Â§8- Â§e"+k+" Â§7count=Â§f"+sm.count(k)+" Â§7avg=Â§f"+sm.avg(k)+"ms");
                         return;
                 }
                 String ev = args[1];
-                if(args.length >= 3 && args[2].equalsIgnoreCase("reset")){ sm.reset(ev); sm.save(); sender.sendMessage("§8[§bPC§8] §aStats resetado: §e"+ev); return; }
-                sender.sendMessage("§8[§bPC§8] §7Evento §e"+ev+"§7:");
-                sender.sendMessage("§7  Disparos: §f"+sm.count(ev));
-                sender.sendMessage("§7  Tempo medio: §f"+sm.avg(ev)+"ms");
+                if(args.length >= 3 && args[2].equalsIgnoreCase("reset")){ sm.reset(ev); sm.save(); sender.sendMessage("Â§8[Â§bPCÂ§8] Â§aStats resetado: Â§e"+ev); return; }
+                sender.sendMessage("Â§8[Â§bPCÂ§8] Â§7Evento Â§e"+ev+"Â§7:");
+                sender.sendMessage("Â§7  Disparos: Â§f"+sm.count(ev));
+                sender.sendMessage("Â§7  Tempo medio: Â§f"+sm.avg(ev)+"ms");
                 long last = sm.last(ev);
-                if(last > 0) sender.sendMessage("§7  Ultimo: §f"+new java.text.SimpleDateFormat("dd/MM HH:mm:ss").format(new java.util.Date(last)));
+                if(last > 0) sender.sendMessage("Â§7  Ultimo: Â§f"+new java.text.SimpleDateFormat("dd/MM HH:mm:ss").format(new java.util.Date(last)));
         }
         public static void help(CommandSender sender) {
-                String p = "§8[§b§lPC§8] §r";
-                sender.sendMessage(p + "§7Comandos disponíveis:");
+                String p = "Â§8[Â§bÂ§lPCÂ§8] Â§r";
+                sender.sendMessage(p + "Â§7Comandos disponÃ­veis:");
                 sender.sendMessage("");
-                sender.sendMessage("§b/pc §7- Abre a GUI de eventos");
-                sender.sendMessage("§b/pc help §7- Mostra esta ajuda");
-                sender.sendMessage("§b/pc reload §7- Recarrega as configs");
-                sender.sendMessage("§b/pc verify §7- Valida todos os eventos");
-                sender.sendMessage("§b/pc enable §e<evento> §7- Ativa evento");
-                sender.sendMessage("§b/pc disable §e<evento> §7- Desativa evento");
-                sender.sendMessage("§b/pc debug §e<evento> §7- Debuga evento");
-                sender.sendMessage("§b/pc reset §e<jogador> §e<evento|all> §7- Reseta dados");
-                sender.sendMessage("§b/pc call §e<evento> §7- Chama um evento CALL");
-                sender.sendMessage("§b/pc interrupt §e<evento> §7- Interrompe execução");
-                sender.sendMessage("§b/pc item §7- Editor de item (GUI)");
-                sender.sendMessage("§b/pc events §7- Lista de eventos (GUI)");
-                sender.sendMessage("§b/pc var §e<jogador> §e<nome> §7- Vê/edita variável");
+                sender.sendMessage("Â§b/pc Â§7- Abre a GUI de eventos");
+                sender.sendMessage("Â§b/pc help Â§7- Mostra esta ajuda");
+                sender.sendMessage("Â§b/pc reload Â§7- Recarrega as configs");
+                sender.sendMessage("Â§b/pc verify Â§7- Valida todos os eventos");
+                sender.sendMessage("Â§b/pc enable Â§e<evento> Â§7- Ativa evento");
+                sender.sendMessage("Â§b/pc disable Â§e<evento> Â§7- Desativa evento");
+                sender.sendMessage("Â§b/pc debug Â§e<evento> Â§7- Debuga evento");
+                sender.sendMessage("Â§b/pc reset Â§e<jogador> Â§e<evento|all> Â§7- Reseta dados");
+                sender.sendMessage("Â§b/pc call Â§e<evento> Â§7- Chama um evento CALL");
+                sender.sendMessage("Â§b/pc interrupt Â§e<evento> Â§7- Interrompe execuÃ§Ã£o");
+                sender.sendMessage("Â§b/pc item Â§7- Editor de item (GUI)");
+                sender.sendMessage("Â§b/pc events Â§7- Lista de eventos (GUI)");
+                sender.sendMessage("Â§b/pc var Â§e<jogador> Â§e<nome> Â§7- VÃª/edita variÃ¡vel");
         }
 
 	@Override
@@ -678,17 +678,17 @@ public List<String> getEventsCompletions(String[] args,int argEventPos,boolean a
         
 
         private void sendItemHelp(org.bukkit.entity.Player player){
-                player.sendMessage("§8[§bCE Item§8] §7Subcomandos:");
-                player.sendMessage("§e/ce item §7- abre GUI");
-                player.sendMessage("§e/ce item save|remove <nome>");
-                player.sendMessage("§e/ce item name <texto>");
-                player.sendMessage("§e/ce item lore <set|add|remove|clear>");
-                player.sendMessage("§e/ce item pdc <set|get|remove|list>");
-                player.sendMessage("§e/ce item food <nutrition> <saturation>");
-                player.sendMessage("§e/ce item effect <add|remove|list|clear|copy>");
-                player.sendMessage("§e/ce item nbt §7- dump do item");
-                player.sendMessage("§e/ce item unbreakable <true|false>");
-                player.sendMessage("§e/ce item copy <nome_salvo>");
-                player.sendMessage("§e/ce item clear");
+                player.sendMessage("Â§8[Â§bCE ItemÂ§8] Â§7Subcomandos:");
+                player.sendMessage("Â§e/pc item Â§7- abre GUI");
+                player.sendMessage("Â§e/pc item save|remove <nome>");
+                player.sendMessage("Â§e/pc item name <texto>");
+                player.sendMessage("Â§e/pc item lore <set|add|remove|clear>");
+                player.sendMessage("Â§e/pc item pdc <set|get|remove|list>");
+                player.sendMessage("Â§e/pc item food <nutrition> <saturation>");
+                player.sendMessage("Â§e/pc item effect <add|remove|list|clear|copy>");
+                player.sendMessage("Â§e/pc item nbt Â§7- dump do item");
+                player.sendMessage("Â§e/pc item unbreakable <true|false>");
+                player.sendMessage("Â§e/pc item copy <nome_salvo>");
+                player.sendMessage("Â§e/pc item clear");
         }
 }

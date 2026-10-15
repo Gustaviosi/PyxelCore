@@ -9,4 +9,4 @@ author: PyxelGames (fork de Ajneb97)
 commands:
   pyxelcore:
     description: Main command of PyxelCore
-    aliases: [ce, pc]
+    aliases: [pc]

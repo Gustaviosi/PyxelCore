@@ -13,7 +13,7 @@ public class UpdateCheckerManager {
 
     private String version;
     private String latestVersion;
-    private static final String API = "https://api.github.com/repos/Gustavo-bt/PyxelCore/releases/latest";
+    private static final String API = "https://api.github.com/repos/Gustaviosi/PyxelCore/releases/latest";
 
     public UpdateCheckerManager(String version){
         this.version = version;
